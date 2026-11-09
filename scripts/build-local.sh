@@ -31,9 +31,13 @@ docker build -t "$IMAGE" "$ROOT"
 
 case "$TARGET" in
   docker-desktop)
-    # Docker Desktop's node shares the host's images; a throwaway pod that
-    # starts from the image proves the node can use it without pulling.
-    ctx="${NAME:-docker-desktop}" pod="kc-imgload-$$"
+    # Docker Desktop's Kubernetes (kind mode) runs its node as the container
+    # desktop-control-plane, with its own image store: import the image into
+    # it, as `kind load` does. Then a throwaway pod that starts from the image
+    # proves the node can use it without pulling.
+    ctx="${NAME:-docker-desktop}" pod="kc-imgload-$$" node="${NODE:-desktop-control-plane}"
+    docker save --platform "linux/$(docker exec "$node" uname -m | sed 's/aarch64/arm64/;s/x86_64/amd64/')" "$IMAGE" \
+      | docker exec -i "$node" ctr -n k8s.io images import --digests --snapshotter=overlayfs - >/dev/null
     trap 'kubectl --context "$ctx" -n default delete pod "$pod" --ignore-not-found --wait=false >/dev/null' EXIT
     kubectl --context "$ctx" -n default run "$pod" --image="$IMAGE" \
       --image-pull-policy=Never --restart=Never --command -- /bin/true >/dev/null
