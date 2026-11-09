@@ -1,0 +1,62 @@
+{
+  "realm": "research-id-it",
+  "enabled": true,
+  "directGrantFlow": "direct grant with research id",
+  "authenticationFlows": [
+    {
+      "alias": "direct grant with research id",
+      "description": "Password grant, then the research id step. Test-only: lets the tests sign in over plain HTTP.",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "direct-grant-validate-username",
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false,
+          "authenticatorFlow": false
+        },
+        {
+          "authenticator": "direct-grant-validate-password",
+          "requirement": "REQUIRED",
+          "priority": 20,
+          "userSetupAllowed": false,
+          "authenticatorFlow": false
+        },
+        {
+          "authenticator": "research-id-ensure",
+          "requirement": "REQUIRED",
+          "priority": 30,
+          "userSetupAllowed": false,
+          "authenticatorFlow": false
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "it-client",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "protocolMappers": [
+        {
+          "name": "research id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "research_id",
+            "claim.name": "research_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ]
+}

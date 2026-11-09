@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The research id reservation table. Keycloak runs this changelog on startup.
+  Never edit a changeSet once released: add a new one.
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
+
+  <changeSet author="research-services" id="research-id-1.0-reservation">
+    <createTable tableName="RESEARCH_ID_RESERVATION">
+      <column name="RESEARCH_ID" type="VARCHAR(12)">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_RESEARCH_ID_RESERVATION"/>
+      </column>
+      <column name="REALM_ID" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="USER_ID" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="CREATED_TIMESTAMP" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addUniqueConstraint tableName="RESEARCH_ID_RESERVATION"
+                         columnNames="REALM_ID, USER_ID"
+                         constraintName="UK_RESEARCH_ID_RESERVATION_USER"/>
+  </changeSet>
+
+</databaseChangeLog>
