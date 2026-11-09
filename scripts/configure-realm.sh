@@ -31,6 +31,10 @@ command -v jq >/dev/null || { echo "error: needs jq" >&2; exit 1; }
 
 USER_NAME="${KC_ADMIN_USER:-}"
 PASSWORD="${KC_ADMIN_PASSWORD:-}"
+if { [ -z "$USER_NAME" ] || [ -z "$PASSWORD" ]; } && [ ! -t 0 ]; then
+  echo "error: no terminal to ask for the admin login; run this in a terminal window" >&2
+  exit 1
+fi
 [ -n "$USER_NAME" ] || read -r -p "Keycloak admin user (master realm): " USER_NAME
 [ -n "$PASSWORD" ] || { read -r -s -p "Password: " PASSWORD; echo; }
 
